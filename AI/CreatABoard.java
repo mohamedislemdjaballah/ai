@@ -19,11 +19,16 @@ public class CreatABoard extends JFrame implements ActionListener{
     Font font = new Font("DIALOG",Font.PLAIN,20);
     Color red = new Color(225, 0, 0);
 
-    /* Space and gameboard are just panels to help put 
+    /* Space ,cordPanel and gameboard are just panels to help put 
     in compenentsin he frame */
 
     JPanel space = new JPanel(new BorderLayout());
     JPanel gameBoard ;
+    JPanel cordPanel = new JPanel(new FlowLayout());
+    
+    /* Some needed Labels to Represent some details */
+    JLabel cordinatLabel = new JLabel("Give The Cordinates X(col) then Y(row)");
+    /*DrawBoard Button */
     JButton DrawBoard = new JButton("Confirme Cords");
     
     /* JPanel cells holds the matrix cells of our Game */
@@ -50,12 +55,20 @@ public class CreatABoard extends JFrame implements ActionListener{
         setTitle("Robot");
         setSize(800,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        x.setBounds(30, 5, 45, 10);
-        y.setBounds(110, 5, 45, 10);
+        x.setSize(getPreferredSize());
         
         /* Adding the components to the space panel */
-        space.add(x,BorderLayout.NORTH);
-        space.add(y,BorderLayout.LINE_END);
+        cordinatLabel.setFont(font);
+        x.setFont(font);
+        y.setFont(font);
+        
+        x.setBounds(30,1,60,20);
+        y.setBounds(90,1,40,20);
+        cordPanel.add(cordinatLabel );
+        cordPanel.add(x);
+        cordPanel.add(y);
+       
+        space.add(cordPanel,BorderLayout.NORTH);
         space.add(DrawBoard);
 
         /* colors list declaration and initialising */
@@ -88,15 +101,18 @@ public class CreatABoard extends JFrame implements ActionListener{
             x.setVisible(false);
             y.setVisible(false);
             DrawBoard.setVisible(false);
+            cordinatLabel.setVisible(false);
         }else{
+            /* */
             System.err.println("enter a valid and x and y arguments");
             JDialog errour = new JDialog();
+            errour.setTitle("Errour");
             JLabel err = new JLabel("NO CORDINATES FOR X AND Y");
-           
+            
             err.setFont(font);
             err.setForeground(red);
             errour.add(err);
-            errour.setSize(300,300);
+            errour.pack();
             setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
             errour.setVisible(true);
             
@@ -116,7 +132,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     for (int i=0 ;i<width;i++)
         for (int j=0;j<height;j++)
             {
-                Color color = colors.get(rand.nextInt(4));
+                Color color = colors.get(rand.nextInt(6));
                 cells.get(x).setBackground(color);
                 gameBoard.add(cells.get(x));
                 x++;
@@ -125,12 +141,14 @@ public class CreatABoard extends JFrame implements ActionListener{
     solve();
     space.setVisible(true);
     }
+    /* Solving method */
     void solve(){
         int width = (int)x.getValue();
         int height = (int)y.getValue();
-        System.out.println("("+width+","+height+")");
+
+        /* printing the matrix */
         for (Cords cord : matrixCells)
-        System.out.println("("+cord.getX()+","+cord.getY()+")");
+            System.out.print("("+(cord.getX()+1)+","+(cord.getY()+1)+")");
     }
     public static void main(String argv[]){
         try {
