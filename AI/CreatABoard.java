@@ -51,10 +51,18 @@ public class CreatABoard extends JFrame implements ActionListener{
     Cords cordinate,state,parent,start,goal;
     ArrayList<Cords> matrixCells = new ArrayList<Cords>();
     /* Lets Draw some images  */
-    ImageIcon fire = new ImageIcon("fire.png");
-    ImageIcon water = new ImageIcon("sea.png");
-    ImageIcon sand = new ImageIcon("sand.png");
-    ImageIcon wall = new ImageIcon("wall.png");
+    ImageIcon fire = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/fire.png");
+    ImageIcon water = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sea.png");
+    ImageIcon sand = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sand.png");
+    ImageIcon wall = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/wall.png");
+    ImageIcon finishLine = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/finish-line.png");
+    ImageIcon Rsand = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rsand.png");
+    ImageIcon Rgrass = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rgrass.png");
+    ImageIcon robot = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/robot.png");
+    ImageIcon Rempty = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rempty.png");
+    ImageIcon RfinishLine = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/RfinishLine.png");
+    ImageIcon road = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/intersection.png");
+    
     // Image grass = Toolkit.getDefaultToolkit().createImage("../grass.png");
     //gamePanel.drawImage(background, 0, 0, null);
     /* Array List to Store images  */
@@ -87,7 +95,7 @@ public class CreatABoard extends JFrame implements ActionListener{
         /* colors list initialising */
         colors.add(Color.red);
         colors.add(Color.black);
-        colors.add(Color.white);
+        colors.add(Color.LIGHT_GRAY);
         colors.add(Color.blue);
         colors.add(Color.yellow);
         colors.add(Color.green);
@@ -109,152 +117,252 @@ public class CreatABoard extends JFrame implements ActionListener{
     /*Whene we Click on any event on the Frane this method runs
      *by default to initiate the following commands
      */
-    public void actionPerformed(ActionEvent e)
-    {  
-        if(e.getSource()==DrawBoard)
+public void actionPerformed(ActionEvent e)
+{  
+    if(e.getSource()==DrawBoard)
+    {
+        /* Width and height takes the value of the 
+        * JSpinner 
+        */
+        if((int)x.getValue() > 0 && (int)y.getValue() > 0)
         {
-            /* Width and height takes the value of the 
-            * JSpinner 
-            */
-            if((int)x.getValue() > 0 && (int)y.getValue() > 0)
-            {
-                width = (int)x.getValue();
-                height = (int)y.getValue();
-                x.setVisible(false);
-                y.setVisible(false);
-                DrawBoard.setVisible(false);
-                cordinatLabel.setVisible(false);
-            }else{
-                /* */
-                System.err.println("enter a valid and x and y arguments");
-                JDialog errour = new JDialog();
-                errour.setTitle("Errour");
-                JLabel err = new JLabel("NO CORDINATES FOR X AND Y");
-                
-                err.setFont(font);
-                err.setForeground(red);
-                errour.add(err);
-                errour.pack();
-                setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
-                errour.setVisible(true);
-                
+            width = (int)x.getValue();
+            height = (int)y.getValue();
+            x.setVisible(false);
+            y.setVisible(false);
+            DrawBoard.setVisible(false);
+            cordinatLabel.setVisible(false);
+        }else{
+            /* */
+            System.err.println("enter a valid and x and y arguments");
+            JDialog errour = new JDialog();
+            errour.setTitle("Errour");
+            JLabel err = new JLabel("NO CORDINATES FOR X AND Y");
+            
+            err.setFont(font);
+            err.setForeground(red);
+            errour.add(err);
+            errour.pack();
+            setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
+            errour.setVisible(true);
+            
 
-                }
+            }
 
-                gameBoard = new JPanel(new GridLayout(width,height));
-                for (int i=0 ;i<width;i++)
-                    for (int j=0; j<height;j++)
-                    {
-                        cell = new JLabel();
-                        cell.setOpaque(true);
-                        cell.setVerticalAlignment(JLabel.CENTER);
-                        cell.setHorizontalAlignment(JLabel.CENTER);
-                        cell.setSize(100, 100);
-                        cells.add(cell);
-                        cordinate = new Cords(i, j);
-                        matrixCells.add(cordinate);
-                    }
-            int x=0;
+            gameBoard = new JPanel(new GridLayout(width,height));
             for (int i=0 ;i<width;i++)
-                for (int j=0;j<height;j++)
+                for (int j=0; j<height;j++)
+                {
+                    cell = new JLabel();
+                    cell.setOpaque(true);
+                    cell.setVerticalAlignment(JLabel.CENTER);
+                    cell.setHorizontalAlignment(JLabel.CENTER);
+                    System.out.println("frame width"+this.getWidth()/width);
+                    cell.setSize(this.getWidth()/width, this.getHeight()/height);
+                    cells.add(cell);
+                    cordinate = new Cords(i, j);
+                    matrixCells.add(cordinate);
+                }
+        int x=0;
+        /*// Let's loop the maze we created previously and make it more like a real maze by adding 
+        some obstacles 
+        */
+        for (int i=0 ;i<width;i++)
+            for (int j=0;j<height;j++)
+                {
+                    
+                    /* image and scaled are just object we will store the images in*/
+                    Image image;
+                    ImageIcon scaled;
+
+                    /*lets add for each cell in the board a background color randomly so each color describes 
+                        * the kind of the obstacle as black for walls blue for water and so on ...
+                        */
+                    Color color = colors.get(rand.nextInt(6));
+                    cells.get(x).setBackground(color);
+                    color = cells.get(x).getBackground();
+                    
+                    
+                    /* this if statement concern seting for each cell its propre background image 
+                    depending on the background colors */
+                    if(color == Color.red)
                     {
-                        Image image;
-                        ImageIcon scaled;
-                        Color color = colors.get(rand.nextInt(6));
-                        cells.get(x).setBackground(color);
-                        Color clr = cells.get(x).getBackground();
-                        System.out.println("width"+cells.get(x));
-                        if(clr == Color.red){ 
-                            image = fire.getImage();
-                            Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
-                            scaled = new ImageIcon(Simage);
-                            cells.get(x).setIcon(scaled);
-                        }else if(clr == Color.blue)
+                        /*SETING THE BG IMAGE PROPERLY  */ 
+                        image = fire.getImage();
+                        Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
+                    
+                        scaled = new ImageIcon(Simage);
+                        cells.get(x).setIcon(scaled);
+                    }else 
+                        if(color == Color.blue)
                         { 
-                            image = water.getImage();
-                            Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
-                          
-
-                            scaled = new ImageIcon(Simage);
-                            cells.get(x).setIcon(scaled);
-                        }else if(clr == Color.BLACK)
-                        { 
-                            image = wall.getImage();
-                            Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
-                           
-                            scaled = new ImageIcon(Simage);
-                            cells.get(x).setIcon(scaled);
-                        }else if(clr == Color.yellow)
-                        { 
-                            image = sand.getImage();
-                            Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
+                            try {
+                                image = water.getImage();
+                                Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
                             
-                            scaled = new ImageIcon(Simage);
-                            cells.get(x).setIcon(scaled);
-                        }
-                        // cells.get(x) = obstacles.get(rand.nextInt(obstacles.size()));
-                        gameBoard.add(cells.get(x));
-                        x++;
-                    }
-            space.add(gameBoard,BorderLayout.CENTER);
-            solve();
-            space.setVisible(true);
-        }else if(e.getSource() == StartSolving)
-        {
+    
+                                scaled = new ImageIcon(Simage);
+                                cells.get(x).setIcon(scaled);
+                            } catch (Exception ex) {
+                                // TODO: handle exception
+                                System.err.println("water inage could not be loaded ");
+                            }
+                        }else 
+                            if(color == Color.BLACK)
+                            { 
 
-            int R = rand.nextInt(matrixCells.size());
-            cordinate = matrixCells.get(R);
-            // get a Starting Point
-            start = cordinate;
+                                try {
+                                    image = wall.getImage();
+                                    Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
+                                
+                                    scaled = new ImageIcon(Simage);
+                                    cells.get(x).setIcon(scaled);
+                                } catch (Exception ex) {
+                                    // TODO: handle exception
+                                    System.err.println("wall inage could not be loaded ");
+                                }
+                            }else 
+                                if(color == Color.yellow)
+                                { 
+                                    try {
+                                        image = sand.getImage();
+                                        Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
+                                    
+                                        scaled = new ImageIcon(Simage);
+                                        cells.get(x).setIcon(scaled);
+                                    } catch (Exception ex) {
+                                        // TODO: handle exception
+                                        System.err.println("sand inage could not be loaded ");
+                                    }
+                                    
+                                }
+                        // cells.get(x) = obstacles.get(rand.nextInt(obstacles.size()));
+                    gameBoard.add(cells.get(x));
+                    x++;
+                }
+        space.add(gameBoard,BorderLayout.CENTER);
+        solve();
+        space.setVisible(true);
+        
+        
+        /*end of clicking on DrawBoard 
+        
+        Button Event */
+    
+    
+    }else if(e.getSource() == StartSolving)
+    {
+        /* Seting startSolving Button Enable to false so we interupt any try to click
+            * it again and 
+            */
+        StartSolving.setEnabled(false);
+        
+        /* R holds the the instant of the object Ramnom rand 
+        and the cordinate hold a random cell (x,y)
+        */
+        int R = rand.nextInt(matrixCells.size());
+        cordinate = matrixCells.get(R);
+        
+        // Passing in the first random value in the start point 
+        start = cordinate;
+
+        R = rand.nextInt(matrixCells.size());
+        cordinate = matrixCells.get(R);
+        
+        // Passing in the Second random value in the target point 
+        goal = cordinate;
+
+        /*if the start and the goal cord are somehow equal 
+            * thene loop intell we get a diffrent cell then the start cell
+            */
+        while(start == goal){
             R = rand.nextInt(matrixCells.size());
             cordinate = matrixCells.get(R);
             //get a Goal Point
             goal = cordinate;
-            while(start == goal){
-                R = rand.nextInt(matrixCells.size());
-                cordinate = matrixCells.get(R);
-                //get a Goal Point
-                goal = cordinate;
-            }
-            ref =0;
-            for (int i=0 ;i<width;i++)
-                for (int j=0;j<height;j++)
-                    {
-                        if((i == start.getX()) && (j == start.getY()))
-                        {
-                             cells.get(ref).setBackground(Color.orange);
-                        
-                         }else 
-                             if((i == goal.getX()) && (j == goal.getY()))
-                                 cells.get(ref).setBackground(Color.MAGENTA);
-                        
-                    
-                    ref ++;
-                }
-        /*end of Start Solving  */
         }
-
-    }
-    /* Solving method */
-    void solve()
-    {
-        int width = (int)x.getValue();
-        int height = (int)y.getValue();
-
-        /* printing the matrix */
-        for (Cords cord : matrixCells)
-            System.out.print("("+(cord.getX()+1)+","+(cord.getY()+1)+")");
-        StartSolving.setFont(font);
-        StartSolving.addActionListener(this);
-        cordPanel.add(StartSolving);
+        /* ref is an index var for the matrixcell */
+        ref =0;
+        /* Image are just needed to scale the image tothe probre size if the label  */
+        Image image;
+        ImageIcon scaled;
         
+        
+        /* looping the matrix to get the cells wich are equal
+            * to the start and the target cords
+            */
+        for (int i=0 ;i<width;i++)
+            for (int j=0;j<height;j++)
+                {
+                    if((i == start.getX()) && (j == start.getY()))
+                    {
+
+                        try {
+
+                            // an image is used to store the image we want to set as background
+                            image = robot.getImage();
+
+                            // the S referse to Scale and by mean we want to hold the scaled image we get from above in image  
+                            Image Simage = image.getScaledInstance(cells.get(ref).getWidth(), cells.get(ref).getHeight(), Image.SCALE_SMOOTH);
+                            
+                            
+                            /*scaled is the ImageIcon we will set as a background to the label*/
+                            scaled = new ImageIcon(Simage);
+                            cells.get(ref).setIcon(scaled);
+
+                            /*and we should remove the backgorund also */
+                            cells.get(ref).setBackground(Color.white);
+
+                        } catch (Exception ex) {
+                            // TODO: handle exception
+                            System.err.println("Image could not be loaded");
+                        }
+                    
+                        }else 
+                            if((i == goal.getX()) && (j == goal.getY()))
+                                {
+                                try {
+                                    image = finishLine.getImage();
+                                Image Simage = image.getScaledInstance(cells.get(ref).getWidth(), cells.get(ref).getHeight(), Image.SCALE_SMOOTH);
+                                
+                                scaled = new ImageIcon(Simage);
+                                cells.get(ref).setIcon(scaled);
+                                cells.get(ref).setBackground(Color.white);
+                                } catch (Exception ex) {
+                                    // TODO: handle exception
+                                    System.err.println("Image could not be loaded");
+                                }
+                            }
+                    
+                
+                ref ++;
+            }
+    /*end of Start Solving  */
     }
+
+}
+    /* Solving method */
+void solve()
+{
+    // width and height are just meant to store the matrix demonsion
+    width = (int)x.getValue();
+    height = (int)y.getValue();
+
+    // /* printing the matrix just to comfort it is correct */
+    // for (Cords cord : matrixCells)
+    //     System.out.print("("+(cord.getX()+1)+","+(cord.getY()+1)+")");
+    
+    /*Add Start solving to the event if all is clear and values are set */
+    StartSolving.setFont(font);
+    StartSolving.addActionListener(this);
+    cordPanel.add(StartSolving);
+}
     public static void main(String argv[]){
         try {
            CreatABoard a = new CreatABoard();
            a.Board();
         } catch (Exception e) {
-            System.out.println("no file");
+            System.out.println("Programe could not be runned ");
         }
     }
 }
