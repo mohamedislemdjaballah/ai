@@ -5,11 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Stack;
-import java.util.Queue;
+// import java.util.Stack;
+// import java.util.Queue;
 
 
 public class CreatABoard extends JFrame implements ActionListener{
+
     /* The Hegiht number of row cells and Width number of col cels never Change 
      * So i just declared as static 'consts'
      */
@@ -50,6 +51,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     int ref;
     Cords cordinate,state,parent,start,goal;
     ArrayList<Cords> matrixCells = new ArrayList<Cords>();
+
     /* Lets Draw some images  */
     ImageIcon fire = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/fire.png");
     ImageIcon water = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sea.png");
