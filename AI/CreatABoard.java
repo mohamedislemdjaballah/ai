@@ -62,6 +62,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     ImageIcon Rempty = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rempty.png");
     ImageIcon RfinishLine = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/RfinishLine.png");
     ImageIcon road = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/intersection.png");
+    ImageIcon grass = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/grass.png");
     
     // Image grass = Toolkit.getDefaultToolkit().createImage("../grass.png");
     //gamePanel.drawImage(background, 0, 0, null);
@@ -235,6 +236,20 @@ public void actionPerformed(ActionEvent e)
                                         System.err.println("sand inage could not be loaded ");
                                     }
                                     
+                                }else 
+                                if(color == Color.green)
+                                { 
+    
+                                    try {
+                                        image = grass.getImage();
+                                        Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
+                                    
+                                        scaled = new ImageIcon(Simage);
+                                        cells.get(x).setIcon(scaled);
+                                    } catch (Exception ex) {
+                                        // TODO: handle exception
+                                        System.err.println("wall inage could not be loaded ");
+                                    }
                                 }
                         // cells.get(x) = obstacles.get(rand.nextInt(obstacles.size()));
                     gameBoard.add(cells.get(x));
@@ -337,6 +352,15 @@ public void actionPerformed(ActionEvent e)
                 
                 ref ++;
             }
+
+            /*  After seting the cords to the ending and the goal lets try calcuating the distance
+            to each cell to the goal
+            */
+            for (Cords cord : matrixCells)
+                cord.setDistance(cord, goal);
+            for (Cords cord : matrixCells)
+                System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
+            
     /*end of Start Solving  */
     }
 
