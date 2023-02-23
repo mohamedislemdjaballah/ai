@@ -11,6 +11,11 @@ import java.util.Random;
 
 public class CreatABoard extends JFrame implements ActionListener{
 
+
+    /* A frontier is an Array list that holds the stat<Cords> */
+    ArrayList<Cords> frontier = new ArrayList<Cords>();
+
+    
     /* The Hegiht number of row cells and Width number of col cels never Change 
      * So i just declared as static 'consts'
      */
@@ -51,7 +56,8 @@ public class CreatABoard extends JFrame implements ActionListener{
     int ref;
     Cords cordinate,state,parent,start,goal;
     ArrayList<Cords> matrixCells = new ArrayList<Cords>();
-
+    
+    String actions[] = {"up","down","right","left"};
     /* Lets Draw some images  */
     ImageIcon fire = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/fire.png");
     ImageIcon water = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sea.png");
@@ -350,7 +356,7 @@ public void actionPerformed(ActionEvent e)
                                     System.err.println("Image could not be loaded");
                                 }
                             }
-                    
+                            image = fire.getImage();
                 
                 ref ++;
             }
@@ -360,8 +366,9 @@ public void actionPerformed(ActionEvent e)
             */
             for (Cords cord : matrixCells)
                 cord.setDistance(cord, goal);
-            for (Cords cord : matrixCells)
-                System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
+            // for (Cords cord : matrixCells)
+            //     System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
+            
             
     /*end of Start Solving  */
     }
