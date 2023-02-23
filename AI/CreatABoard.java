@@ -15,7 +15,11 @@ public class CreatABoard extends JFrame implements ActionListener{
     /* A frontier is an Array list that holds the stat<Cords> */
     ArrayList<Cords> frontier = new ArrayList<Cords>();
 
-    
+    /*A solutions to add the probre nods to the path  */
+    ArrayList<Cords> solution = new ArrayList<Cords>();
+
+    /*An Explored list of Node to add the unprober nodes  */
+    ArrayList<Cords> Explored = new ArrayList<Cords>();
     /* The Hegiht number of row cells and Width number of col cels never Change 
      * So i just declared as static 'consts'
      */
@@ -366,6 +370,7 @@ public void actionPerformed(ActionEvent e)
             */
             for (Cords cord : matrixCells)
                 cord.setDistance(cord, goal);
+
             // for (Cords cord : matrixCells)
             //     System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
             
@@ -390,6 +395,10 @@ void solve()
     StartSolving.addActionListener(this);
     cordPanel.add(StartSolving);
 }
+    Cords probreMove(ArrayList<Cords> frontier){
+        return null;
+    }
+
     public static void main(String argv[]){
         try {
            CreatABoard a = new CreatABoard();

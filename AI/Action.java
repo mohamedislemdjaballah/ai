@@ -9,16 +9,20 @@ public class Action {
         this.x = x;
         this.y = y;
     }
-    Action Up(int row,int col){
-        return new Action("up",row-1,col);
+    Cords Up(int row,int col){
+        Cords e = new Cords((row-1),col);
+        return e;
     }
-    Action Down(int row,int col){
-        return new Action("down",row+1,col);
+    Cords Down(int row,int col){
+        Cords e = new Cords((row+1),col);
+        return e;   
     }
-    Action Left(int row,int col){
-        return new Action("left",row,col-1);
+    Cords Left(int row,int col){
+        Cords e = new Cords(row,col-1);
+        return e; 
     }
-    Action Right(int row,int col){
-        return new Action("right",row,col+1);
+    Cords Right(int row,int col){
+        Cords e = new Cords(row,col+1);
+        return e; 
     }
 }
