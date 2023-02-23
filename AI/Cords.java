@@ -4,6 +4,7 @@ public class Cords{
     private int x;
     private int y;
     private int distance;
+    private int ref;
     public Cords(int x,int y){
         this.x= x;
         this.y=y;
@@ -16,6 +17,9 @@ public class Cords{
         
         
         this.distance = Math.abs((x2-x1))+Math.abs(+(y2-y1)); 
+    }
+    public void setRef(int ref) {
+        this.ref = ref;
     }
     void setCords(int x,int y){
         this.x = x;

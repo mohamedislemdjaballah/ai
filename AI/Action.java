@@ -4,25 +4,18 @@ public class Action {
     int x;
     int y;
     String move;
-    public Action(String action,int x,int y){
-        this.move = action;
-        this.x = x;
-        this.y = y;
+    
+       
+    Cords Up(Cords e){
+        return new Cords(e.getX()-1,e.getY());
     }
-    Cords Up(int row,int col){
-        Cords e = new Cords((row-1),col);
-        return e;
+    Cords Down(Cords e){
+        return new Cords(e.getX()+1,e.getY());
     }
-    Cords Down(int row,int col){
-        Cords e = new Cords((row+1),col);
-        return e;   
+    Cords Left(Cords e){
+        return new Cords(e.getX(),e.getY()-1);
     }
-    Cords Left(int row,int col){
-        Cords e = new Cords(row,col-1);
-        return e; 
-    }
-    Cords Right(int row,int col){
-        Cords e = new Cords(row,col+1);
-        return e; 
+    Cords Right(Cords e){
+        return new Cords(e.getX(),e.getY()+1);
     }
 }

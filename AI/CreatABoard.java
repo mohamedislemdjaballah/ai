@@ -20,6 +20,10 @@ public class CreatABoard extends JFrame implements ActionListener{
 
     /*An Explored list of Node to add the unprober nodes  */
     ArrayList<Cords> Explored = new ArrayList<Cords>();
+
+    /*The action list we can do  */
+    String actions[] = {"up","down","right","left"};
+    
     /* The Hegiht number of row cells and Width number of col cels never Change 
      * So i just declared as static 'consts'
      */
@@ -61,7 +65,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     Cords cordinate,state,parent,start,goal;
     ArrayList<Cords> matrixCells = new ArrayList<Cords>();
     
-    String actions[] = {"up","down","right","left"};
+    
     /* Lets Draw some images  */
     ImageIcon fire = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/fire.png");
     ImageIcon water = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sea.png");
@@ -161,7 +165,7 @@ public void actionPerformed(ActionEvent e)
             
 
             }
-
+            ref=0;
             gameBoard = new JPanel(new GridLayout(width,height));
             for (int i=0 ;i<width;i++)
                 for (int j=0; j<height;j++)
@@ -174,7 +178,9 @@ public void actionPerformed(ActionEvent e)
                     cell.setSize(this.getWidth()/width, this.getHeight()/height);
                     cells.add(cell);
                     cordinate = new Cords(i, j);
+                    cordinate.setRef(ref);
                     matrixCells.add(cordinate);
+                    ref++;
                 }
         int x=0;
         /*// Let's loop the maze we created previously and make it more like a real maze by adding 
@@ -374,7 +380,19 @@ public void actionPerformed(ActionEvent e)
             // for (Cords cord : matrixCells)
             //     System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
             
+            frontier.add(start);
+            Action move = new Action();
             
+            while(frontier.isEmpty() == false)
+            {
+                for (String action : actions){
+                    if (action == "left"){
+                        state = move.Left(frontier.get(0));
+                        
+                    }
+                }
+        }
+
     /*end of Start Solving  */
     }
 
