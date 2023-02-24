@@ -1,6 +1,9 @@
 package AI;
 
 import javax.swing.*;
+
+
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -129,6 +132,8 @@ public class CreatABoard extends JFrame implements ActionListener{
         DrawBoard.addActionListener(this);
 
         /*Seting Frame visibility to true */
+        
+        setResizable(true);
         setVisible(true);
     }
     /*Whene we Click on any event on the Frane this method runs
@@ -167,6 +172,8 @@ public void actionPerformed(ActionEvent e)
             }
             ref=0;
             gameBoard = new JPanel(new GridLayout(width,height));
+            
+            /*Lets's make the cells depending on demonsion giving and set backgrounds equal to each state of label */
             for (int i=0 ;i<width;i++)
                 for (int j=0; j<height;j++)
                 {
@@ -180,6 +187,7 @@ public void actionPerformed(ActionEvent e)
                     cordinate = new Cords(i, j);
                     cordinate.setRef(ref);
                     matrixCells.add(cordinate);
+                    // System.out.println("("+i+","+j+")---->reference"+cordinate.getRef());
                     ref++;
                 }
         int x=0;
@@ -206,6 +214,7 @@ public void actionPerformed(ActionEvent e)
                     depending on the background colors */
                     if(color == Color.red)
                     {
+
                         /*SETING THE BG IMAGE PROPERLY  */ 
                         image = fire.getImage();
                         Image Simage = image.getScaledInstance(cells.get(x).getWidth(), cells.get(x).getHeight(), Image.SCALE_SMOOTH);
@@ -366,7 +375,7 @@ public void actionPerformed(ActionEvent e)
                                     System.err.println("Image could not be loaded");
                                 }
                             }
-                            image = fire.getImage();
+                           
                 
                 ref ++;
             }
@@ -377,21 +386,17 @@ public void actionPerformed(ActionEvent e)
             for (Cords cord : matrixCells)
                 cord.setDistance(cord, goal);
 
-            // for (Cords cord : matrixCells)
-            //     System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
+            for (Cords cord : matrixCells)
+                System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
             
             frontier.add(start);
-            Action move = new Action();
+            for(String action : actions)
+                System.err.println("List of Action :"+action);
+
             
-            while(frontier.isEmpty() == false)
-            {
-                for (String action : actions){
-                    if (action == "left"){
-                        state = move.Left(frontier.get(0));
-                        
-                    }
-                }
-        }
+            probreMove(frontier);
+            
+            
 
     /*end of Start Solving  */
     }
@@ -413,16 +418,93 @@ void solve()
     StartSolving.addActionListener(this);
     cordPanel.add(StartSolving);
 }
-    Cords probreMove(ArrayList<Cords> frontier){
-        return null;
+    void probreMove(ArrayList<Cords> frontier){
+        Action move = new Action();
+        Cords newState;
+        Color bgColor;
+        
+        /* state get the initial start node */
+        state = frontier.get(0);
+        System.out.println("start distance ::"+state.getdistance()+"("+state.getX()+","+state.getY()+")");
+        
+        
+        /* Loop to find all available spots */
+        while(!frontier.isEmpty()){
+            frontier.remove(0);
+         for(String action : actions){
+            
+            switch(action){
+
+                case "up" :
+                 
+                 if(((state.getX()-1)>=0)){
+                    newState = move.Up(state,width);
+                    bgColor =cells.get(newState.getRef()).getBackground();
+                    System.out.println(bgColor);
+                if(( bgColor != Color.red && bgColor != Color.black)  )
+                    frontier.add(newState);}
+                ;
+                break;
+
+                case "down" : 
+               
+                
+                if(((state.getX()+1)<height))
+                {
+                    newState = move.Down(state,width);
+                    bgColor =cells.get(newState.getRef()).getBackground();
+                    System.out.println("Down newState"+newState.getRef()+" bg"+bgColor+"oldState bgColor :"+cells.get(newState.getRef()).getBackground());
+                    if(( bgColor != Color.red && bgColor != Color.black))
+                      frontier.add(newState);
+                }
+                ;
+                break;
+                case "left" : 
+                
+                if((state.getY()-1)>=0){
+                    newState = move.Left(state);
+                    bgColor =cells.get(newState.getRef()).getBackground();
+
+                    System.out.println("newRed and color "+newState.getRef()+""+bgColor+"old State Red"+state.getRef());
+                    if( ( bgColor != Color.red && bgColor != Color.black))
+                        frontier.add(newState);
+                }
+                break;
+                
+                case "right" : 
+                
+                
+                if(((state.getY()+1)<width))
+                {
+                    newState = move.Right(state);
+                    bgColor =cells.get(newState.getRef()).getBackground();
+                    System.out.println(bgColor);
+                    if( ( bgColor != Color.red && bgColor != Color.black))
+                        frontier.add(newState);
+                }
+                break;
+            }
+
+         }
+         for(Cords d : frontier)
+        {
+            System.out.println("("+d.getX()+","+d.getY()+")");
+        }
+        frontier.clear();
+        }
+        
+        
     }
 
     public static void main(String argv[]){
         try {
            CreatABoard a = new CreatABoard();
            a.Board();
+           
+           
         } catch (Exception e) {
             System.out.println("Programe could not be runned ");
         }
+        
     }
 }

@@ -21,6 +21,9 @@ public class Cords{
     public void setRef(int ref) {
         this.ref = ref;
     }
+    public int getRef() {
+        return ref;
+    }
     void setCords(int x,int y){
         this.x = x;
         this.y = y;
