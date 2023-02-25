@@ -1,0 +1,56 @@
+            for(String action : actions){
+            
+                switch(action){
+                    /* in each move we make sure we are not getting over the height and width of the maze*/
+                    case "up" :
+                    
+                        if(((state.getX()-1)>=0))
+                        {
+                            newState = move.Up(state,width);
+                            bgColor =cells.get(newState.getRef()).getBackground();
+                            // System.out.println(bgColor);
+                        if(( bgColor != Color.red && bgColor != Color.black)  )
+                        frontier.add(newState);
+                        }
+                    ;
+                    break;
+                    case "down" : 
+                
+                    
+                        if(((state.getX()+1)<height))
+                        {
+                            newState = move.Down(state,width);
+                            bgColor =cells.get(newState.getRef()).getBackground();
+                            // System.out.println("Down newState"+newState.getRef()+" bg"+bgColor+"oldState bgColor :"+cells.get(newState.getRef()).getBackground());
+                            if(( bgColor != Color.red && bgColor != Color.black))
+                            frontier.add(newState);
+                        }
+                        ;
+                    break;
+                    case "left" : 
+                    
+                        if((state.getY()-1)>=0){
+                            newState = move.Left(state);
+                            bgColor =cells.get(newState.getRef()).getBackground();
+
+                            System.out.println("newRed and color "+newState.getRef()+""+bgColor+"old State Red"+state.getRef());
+                            if( ( bgColor != Color.red && bgColor != Color.black))
+                                frontier.add(newState);
+                        }
+                    break;
+                    
+                    case "right" : 
+                    
+                    
+                        if(((state.getY()+1)<width))
+                        {
+                            newState = move.Right(state);
+                            bgColor =cells.get(newState.getRef()).getBackground();
+                            // System.out.println(bgColor);
+                            if( ( bgColor != Color.red && bgColor != Color.black))
+                                frontier.add(newState);
+                        }
+                    break;
+            }
+
+         }
