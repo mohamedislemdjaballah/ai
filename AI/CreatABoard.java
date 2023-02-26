@@ -566,9 +566,9 @@ void probreMove(Cords start){
         state = null;
     int i=0;
         System.out.println(goal.getRef());
-        while(i<6)
+        while(true)
         {
-        i++;
+        
 
             /*if the state iquals to null that means we just started thene set it ti start cords */
             if(state == null){
@@ -582,7 +582,7 @@ void probreMove(Cords start){
             if(frontier.isEmpty() && !UnExplored.isEmpty()){
                 solution.remove(solution.size()-1);
                 state = UnExplored.get(UnExplored.size()-1);
-                System.out.println("new state ("+state.getX()+","+state.getY()+")");
+                System.out.println("new state from Unexplored ("+state.getX()+","+state.getY()+")");
             }else 
             /*if the frontier is empty and we have some unexplored cells we should check on theme */
             if(!frontier.isEmpty() && UnExplored.isEmpty()){
@@ -597,7 +597,9 @@ void probreMove(Cords start){
             /*if both list are not empty lets just set the state fron the frontier  */
             if(frontier.isEmpty() && UnExplored.isEmpty()){
                 System.out.println("no solution was found");
+                System.exit(0);
                 break;
+
             }
              
             /*if the state is equal to starting point  */
@@ -667,6 +669,7 @@ void probreMove(Cords start){
             if(reachedGoal(solution,goal)==true){
                 System.out.println("founded the goal solution found");
                 displayMove(solution);
+                break;
             }
         //     /* Loop to find all available spots */
         //     frontier = allOptions(state); 
