@@ -419,16 +419,24 @@ void solve()
     StartSolving.addActionListener(this);
     cordPanel.add(StartSolving);
 }
-
+boolean nodeExploreded(Cords state,ArrayList<Cords> Explored){
+    
+    for (Cords e : Explored) {
+    if((state.getX() == e.getX())&&(state.getY() == e.getY()))
+    return true;
+    }
+    return false;
+}
 
 
 
 /* a method that returns all options */
-ArrayList<Cords> allOptions(Cords state)
+ArrayList<Cords> allOptions(Cords state,ArrayList<Cords> Explored)
 {
 Action move = new Action();
 Cords newState;
 Color bgColor;
+
         for(String action : actions){
             
                 switch(action){
@@ -443,6 +451,7 @@ Color bgColor;
                             // System.out.println(bgColor);
                             
                         if(( bgColor != Color.red && bgColor != Color.black)  )
+                        if(!nodeExploreded(newState, Explored))
                         frontier.add(newState);
                         }
                     ;
@@ -456,7 +465,8 @@ Color bgColor;
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println("Down newState"+newState.getRef()+" bg"+bgColor+"oldState bgColor :"+cells.get(newState.getRef()).getBackground());
                             if(( bgColor != Color.red && bgColor != Color.black))
-                            frontier.add(newState);
+                            if(!nodeExploreded(newState, Explored))
+                                frontier.add(newState);
                         }
                         ;
                     break;
@@ -468,21 +478,26 @@ Color bgColor;
 
                             System.out.println("newRed and color "+newState.getRef()+""+bgColor+"old State Red"+state.getRef());
                             if( ( bgColor != Color.red && bgColor != Color.black))
-                                frontier.add(newState);
+                            if(!nodeExploreded(newState, Explored))
+                            frontier.add(newState);
                         }
                     break;
                     
                     case "right" : 
                     
-                    
+                        System.out.println("before right walking");
+                        display(frontier);
                         if(((state.getY()+1)<width))
                         {
                             newState = move.Right(state);
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println(bgColor);
                             if( ( bgColor != Color.red && bgColor != Color.black))
+                            if(!nodeExploreded(newState, Explored))
                                 frontier.add(newState);
                         }
+                        System.out.println("after walking right ");
+                        display(frontier);
                     break;
             }
 
@@ -541,6 +556,11 @@ ArrayList<Cords> addToUnExplored(ArrayList<Cords> frontier){
         UnExplored.add(e);
     return UnExplored;
 }
+/*Display Lst contents */
+void display(ArrayList<Cords> list){
+    for(Cords e : list)
+        System.out.println("("+e.getX()+""+e.getY()+")"+e.getRef()+"Ref");
+}
 
 
 /* Veridy if we found a solution */
@@ -557,6 +577,11 @@ for (Cords e : solution) {
     cells.get(e.getRef()).setBackground(Color.green);
 }
 }
+ void paintExplored(ArrayList<Cords> solution){
+    for (Cords e : solution) {
+        cells.get(e.getRef()).setBackground(Color.orange);
+    }
+    }
 void probreMove(Cords start){
 
         
@@ -564,11 +589,12 @@ void probreMove(Cords start){
         // solution.add(start);
         /* luch state at null */
         state = null;
+        boolean started = false ;
     int i=0;
         System.out.println(goal.getRef());
         while(true)
         {
-        
+        i++;
 
             /*if the state iquals to null that means we just started thene set it ti start cords */
             if(state == null){
@@ -582,31 +608,35 @@ void probreMove(Cords start){
             if(frontier.isEmpty() && !UnExplored.isEmpty()){
                 solution.remove(solution.size()-1);
                 state = UnExplored.get(UnExplored.size()-1);
+                Explored.add(state);
+                UnExplored.remove(state);
                 System.out.println("new state from Unexplored ("+state.getX()+","+state.getY()+")");
             }else 
             /*if the frontier is empty and we have some unexplored cells we should check on theme */
             if(!frontier.isEmpty() && UnExplored.isEmpty()){
                 state = solution.get(solution.size()-1);
-                System.out.println("new state ("+state.getX()+","+state.getY()+")");
+                System.out.println("new state from solution whene unexplored is empty("+state.getX()+","+state.getY()+")");
             }else
             /*if both list are not empty lets just set the state fron the frontier  */
             if(!frontier.isEmpty() && !UnExplored.isEmpty()){
+                display(solution);
                 state = solution.get(solution.size()-1);
-                System.out.println("new state ("+state.getX()+","+state.getY()+")");
+                System.out.println("new state whene frontier and explored bothare not empty("+state.getX()+","+state.getY()+") ref"+state.getRef());
             }else
             /*if both list are not empty lets just set the state fron the frontier  */
             if(frontier.isEmpty() && UnExplored.isEmpty()){
                 System.out.println("no solution was found");
-                System.exit(0);
+                paintExplored(Explored);
                 break;
 
             }
              
             /*if the state is equal to starting point  */
-            if(state == start)
+            if(state == start && started == false)
             {
+                started = true;
                 /*search for all available spots  */
-                frontier =allOptions(state);
+                frontier =allOptions(state,Explored);
                 for (Cords E : frontier) {
                     System.out.println("cords ref alloptient worked just fine ::"+E.getRef());
                 }
@@ -644,14 +674,30 @@ void probreMove(Cords start){
                 for (Cords E : UnExplored) {
                     System.out.println("unexplored worked just fine ::"+E.getRef());
                 }
-            }else{
+            }
+            else
+            {
                 frontier.clear();
+
                 /*search for all available spots  */
-                frontier =allOptions(state);
+                System.out.println("Explored ::");
+                display(Explored);
+                frontier =allOptions(state,Explored);
+                System.out.println("frontier");
+                display(frontier);
+
+
+                /*remove explored points from frontier */
+                if(!Explored.isEmpty())
+                frontier = removeExplored(Explored);
+
+
+                System.out.println("frontier after removing Explored Cells");
+                display(frontier);
+
                 /*add state point to solutions */
                 solution.add(state);
-                /*add state point to explored  */
-                Explored.add(state);
+
                 /*find solution and add it to list */
                 if(!frontier.isEmpty())
                 solution = leastCostSpot(frontier,state);
@@ -664,7 +710,10 @@ void probreMove(Cords start){
                 /*add unexplored spots from frontier to unexplored list */
                 if(!frontier.isEmpty())
                 UnExplored = addToUnExplored(frontier);
-                
+                System.out.println("frontier");
+                display(frontier);
+                System.out.println("Unexplored");
+                display(UnExplored);
             }
             if(reachedGoal(solution,goal)==true){
                 System.out.println("founded the goal solution found");
