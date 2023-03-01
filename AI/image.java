@@ -1,4 +1,3 @@
-package AI;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

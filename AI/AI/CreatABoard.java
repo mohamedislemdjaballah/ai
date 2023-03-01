@@ -1,14 +1,14 @@
 package AI;
-
 import javax.swing.*;
 
-import AI.Cords;
+
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
-// import java.util.Stack;
+import java.util.LinkedHashSet;
+import java.util.Stack;
 // import java.util.Queue;
 
 
@@ -18,13 +18,13 @@ public class CreatABoard extends JFrame implements ActionListener{
     /* A frontier is an Array list that holds the stat<Cords> */
     ArrayList<Cords> frontier = new ArrayList<Cords>();
 
-    /*A solutions to add the probre nods to the path  */
-    ArrayList<Cords> solution = new ArrayList<Cords>();
-
     /*An Explored list of Node to add the unprober nodes  */
-    ArrayList<Cords> Explored = new ArrayList<Cords>();
-    ArrayList<Cords> UnExplored = new ArrayList<Cords>();
-    
+    LinkedHashSet<Cords> Explored = new LinkedHashSet<Cords>();
+    Stack<Cords> UnExplored = new Stack<Cords>();
+
+    /*A solutions to add the probre nods to the path  */
+    Stack<Cords> solution = new Stack<Cords>();
+
     /*The action list we can do  */
     String actions[] = {"up","down","right","left"};
     
@@ -403,6 +403,7 @@ public void actionPerformed(ActionEvent e)
     }
 
 }
+
     /* Solving method */
 void solve()
 {
@@ -418,7 +419,8 @@ void solve()
     StartSolving.addActionListener(this);
     cordPanel.add(StartSolving);
 }
-boolean nodeExploreded(Cords state,ArrayList<Cords> Explored){
+boolean nodeExploreded(Cords state,LinkedHashSet<Cords> Explored)
+{
     
     for (Cords e : Explored) {
     if((state.getX() == e.getX())&&(state.getY() == e.getY()))
@@ -430,16 +432,17 @@ boolean nodeExploreded(Cords state,ArrayList<Cords> Explored){
 
 
 /* a method that returns all options */
-ArrayList<Cords> allOptions(Cords state,ArrayList<Cords> Explored)
+ArrayList<Cords> allOptions(Cords state,LinkedHashSet<Cords> Explored)
 {
 Action move = new Action();
 Cords newState;
 Color bgColor;
  // width and height are just meant to store the matrix demonsion
  width = (int)x.getValue();
- 
  height = (int)y.getValue();
+ 
  System.out.println("width" + width);
+
         for(String action : actions){
             
                 switch(action){
@@ -454,9 +457,10 @@ Color bgColor;
                             // System.out.println(bgColor);
                             
                         if(( bgColor != Color.red && bgColor != Color.black)  )
-                        if(!Explored.isEmpty())
-                        {if(!nodeExploreded(newState, Explored))
-                        frontier.add(newState);
+                            if(!Explored.isEmpty())
+                            {
+                                if(!nodeExploreded(newState, Explored))
+                                    frontier.add(newState);
                     }else
                         frontier.add(newState);
                         }
@@ -471,34 +475,37 @@ Color bgColor;
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println("Down newState"+newState.getRef()+" bg"+bgColor+"oldState bgColor :"+cells.get(newState.getRef()).getBackground());
                             if(( bgColor != Color.red && bgColor != Color.black))
-                            if(!Explored.isEmpty())
-                        {if(!nodeExploreded(newState, Explored))
-                        frontier.add(newState);
-                    }else
-                        frontier.add(newState);
+                                if(!Explored.isEmpty())
+                                {
+                                    if(!nodeExploreded(newState, Explored))
+                                        frontier.add(newState);
+                        
+                                }else
+                                    frontier.add(newState);
                         }
                         ;
                     break;
                     case "left" : 
                     
-                        if((state.getY()-1)>=0){
+                        if((state.getY()-1)>=0)
+                        {
                             newState = move.Left(state);
                             bgColor =cells.get(newState.getRef()).getBackground();
 
                             System.out.println("newRed and color "+newState.getRef()+""+bgColor+"old State Red"+state.getRef());
                             if( ( bgColor != Color.red && bgColor != Color.black))
                             if(!Explored.isEmpty())
-                        {if(!nodeExploreded(newState, Explored))
-                        frontier.add(newState);
-                    }else
-                        frontier.add(newState);
+                            {
+                                System.out.println("walking left");
+                                if(!nodeExploreded(newState, Explored))
+                                    frontier.add(newState);
+                    
+                            }else
+                                frontier.add(newState);
                         }
                     break;
-                    
+
                     case "right" : 
-                    
-                        System.out.println("before right walking");
-                        display(frontier);
                         if(((state.getY()+1)<width))
                         {
                             newState = move.Right(state);
@@ -506,80 +513,92 @@ Color bgColor;
                             // System.out.println(bgColor);
                             if( ( bgColor != Color.red && bgColor != Color.black))
                             if(!Explored.isEmpty())
-                            {if(!nodeExploreded(newState, Explored))
-                            frontier.add(newState);
-                        }else
-                            frontier.add(newState);
+                            {
+                                System.out.println("walking right");
+                                if(!nodeExploreded(newState, Explored))
+                                    frontier.add(newState);
+                        
+                                }else
+                                    frontier.add(newState);
                         }
-                        System.out.println("after walking right ");
-                        display(frontier);
+                        
                     break;
             }
 
          }
+         displayf(frontier);
 return frontier;
 }
 
 
 
 /*Remove All the Explored Nodes from the frontier */
-ArrayList<Cords> removeExplored(ArrayList<Cords> Explored){
+Stack<Cords> removeExplored(LinkedHashSet<Cords> Explored){
     for(Cords e : Explored)
-        frontier.remove(e);
-    return frontier;
+        UnExplored.remove(e);
+    return UnExplored;
 }
 
 /*Find the most optimal spot to reach the goal */
-ArrayList<Cords> leastCostSpot(ArrayList<Cords> frontier,Cords state){
+Cords leastCostSpot(ArrayList<Cords> frontier){
+    Cords bestMove;
+    if(!frontier.isEmpty())
+    {
+        bestMove = frontier.get(frontier.size()-1);
+    }else 
+    if(frontier.size()==1)
+        {
+            bestMove = frontier.get(0);
+        }else
+            bestMove = state;
+    
+    System.out.println("bestMove"+bestMove.getRef());
+    //CALCULATE THE DISTANCE BETWEEN THE CURRENT NODE AND THE GOAL
     for (Cords cord : frontier)
-    cord.setDistance(cord, goal);
-    int optimal = frontier.get(frontier.size()-1).getdistance();
-        solution.add(frontier.get(frontier.size()-1));
+        cord.setDistance(cord, goal);
+        bestMove.setDistance(bestMove, goal);
+        // int optimal = frontier.get(frontier.size()-1).getdistance();
+        // solution.add(frontier.get(frontier.size()-1));
         /*Search for the optimal move in the frontier */
         for(Cords d : frontier)
-        {
-           System.out.println(d.getdistance());
-            System.out.println(solution.get(solution.size()-1).getdistance()+"Compare"+d.getdistance());
-                
+        {          
             /*if the new cords has a less distance thene the previous node we remove
              * than it is not the optimal solution so we remove it
              */
-            if(solution.get(solution.size()-1).getdistance() > d.getdistance())
+            if(bestMove.getdistance() > d.getdistance())
             {
-                System.out.println(solution.get(solution.size()-1).getdistance()+"is bigger than"+d.getdistance());
-                if(solution.size()>=1)
-                solution.remove(solution.size()-1);
-                // System.out.println("Cords  removed from solution and added tp explored ("+solution.get(solution.size()-1).getX()+","+solution.get(solution.size()-1).getY()+")reference"+solution.get(solution.size()-1).getRef());
-                // System.out.println("Solution added to Cards ("+d.getX()+","+d.getY()+")reference"+d.getRef());
-                solution.add(d);
-                optimal = d.getdistance();
+                bestMove = d;
             }
         }
-        
-    return solution;
+        System.out.println("bestMove"+bestMove.getRef());
+    return bestMove;
 }
 
 /*Adding explored nodes to explored list */
-ArrayList<Cords> addToExplored(ArrayList<Cords> solution){
+LinkedHashSet<Cords> addToExplored(Stack<Cords> solution){
     for(Cords e : solution)
         Explored.add(e);
     return Explored;
 }
 /*Adding unexplored nodes to explored list */
-ArrayList<Cords> addToUnExplored(ArrayList<Cords> frontier){
+void addToUnExplored(ArrayList<Cords> frontier){
     for(Cords e : frontier)
-        UnExplored.add(e);
-    return UnExplored;
+        UnExplored.push(e);
+    
 }
 /*Display Lst contents */
-void display(ArrayList<Cords> list){
+void display(Stack<Cords> list){
     for(Cords e : list)
         System.out.println("("+e.getX()+""+e.getY()+")"+e.getRef()+"Ref");
 }
 
+void displayf(ArrayList<Cords> list){
+    for(Cords e : list)
+        System.out.println("("+e.getX()+""+e.getY()+")"+e.getRef()+"Ref");
+}
 
 /* Veridy if we found a solution */
-boolean reachedGoal(ArrayList<Cords> sol,Cords goal){
+boolean reachedGoal(Stack<Cords> sol,Cords goal){
     for (Cords e : sol) {
         if(e.getRef() ==  goal.getRef())    
             return true;
@@ -587,203 +606,84 @@ boolean reachedGoal(ArrayList<Cords> sol,Cords goal){
         
     return false;
 }
-void displayMove(ArrayList<Cords> solution){
+void displayMove(Stack<Cords> solution){
 for (Cords e : solution) {
     cells.get(e.getRef()).setBackground(Color.green);
 }
 }
- void paintExplored(ArrayList<Cords> solution){
-    for (Cords e : solution) {
+ void paintExplored(LinkedHashSet<Cords> Explored){
+    for (Cords e : Explored) {
         cells.get(e.getRef()).setBackground(Color.orange);
     }
     }
 void probreMove(Cords start){
+    state = null;
+    solution.push(start);
+    while(true){
 
-        
-        // // System.out.println("start distance ::"+state.getdistance()+"("+state.getX()+","+state.getY()+")");
-        // solution.add(start);
-        /* luch state at null */
-        state = null;
-        boolean started = false ;
-    
-        System.out.println(goal.getRef());
-        while(true)
+        /* THIS IF AND ELSE STATEMENTS CHOSES THE BEST SPOTE WE NEED TO TAKE */
+        if(state == null)
         {
-        
-
-            /*if the state iquals to null that means we just started thene set it ti start cords */
-            if(state == null){
-                System.out.println("state == start");
-                state = start;
-
-            }else 
-            /*if the state is not null that mean we are looping to find the solution lets just set 
-             * the state to the last element in the solution 
-             */
-            if(frontier.isEmpty() && !UnExplored.isEmpty()){
-                solution.remove(solution.size()-1);
-                state = UnExplored.get(UnExplored.size()-1);
-                Explored.add(state);
-                UnExplored.remove(state);
-                System.out.println("new state from Unexplored ("+state.getX()+","+state.getY()+")");
-            }else 
-            /*if the frontier is empty and we have some unexplored cells we should check on theme */
-            if(!frontier.isEmpty() && UnExplored.isEmpty()){
-                state = solution.get(solution.size()-1);
-                System.out.println("new state from solution whene unexplored is empty("+state.getX()+","+state.getY()+")");
-            }else
-            /*if both list are not empty lets just set the state fron the frontier  */
-            if(!frontier.isEmpty() && !UnExplored.isEmpty()){
-                display(solution);
-                state = solution.get(solution.size()-1);
-                System.out.println("new state whene frontier and explored bothare not empty("+state.getX()+","+state.getY()+") ref"+state.getRef());
-            }else
-            /*if both list are not empty lets just set the state fron the frontier  */
-            if(frontier.isEmpty() && UnExplored.isEmpty()){
-                System.out.println("no solution was found");
-                paintExplored(Explored);
-                break;
-
-            }
-             
-            /*if the state is equal to starting point  */
-            if(state == start && started == false)
-            {
-                started = true;
-                /*search for all available spots  */
-                frontier =allOptions(state,Explored);
-                for (Cords E : frontier) {
-                    System.out.println("cords ref alloptient worked just fine ::"+E.getRef());
-                }
-                /*add start point to solutions */
-                solution.add(state);
-                // System.out.println("added state"+state.getX()+","+state.getY()+" to solution");
-                /*find solution and add it to list */
-                if(!frontier.isEmpty())
-                solution = leastCostSpot(frontier,state);
-                for (Cords E : solution) {
-                    System.out.println("cords ref least cost spote worked just fine ::"+E.getRef());
-                }
-                /*add solutions to explored list  */
-                if(!solution.isEmpty())
-                Explored = addToExplored(solution);
-                for (Cords E : Explored) {
-                    System.out.println("cords ref Explored worked just fine ::"+E.getRef());
-                }
-                /*remove explored points from frontier */
-                for (Cords E : frontier) {
-                    System.out.println("Frontier  just fine ::"+E.getRef());
-                }
-
-                if(!Explored.isEmpty())
-                frontier = removeExplored(Explored);
-                for (Cords E : frontier) {
-                    System.out.println("frontier remover explored worked just fine ::"+E.getRef());
-                }
-                for (Cords E : frontier) {
-                    System.out.println("Frontier  after removing explored ::"+E.getRef());
-                }
-                /*add unexplored spots from frontier to unexplored list */
-                if(!frontier.isEmpty())
-                UnExplored = addToUnExplored(frontier);
-                for (Cords E : UnExplored) {
-                    System.out.println("unexplored worked just fine ::"+E.getRef());
-                }
-            }
-            else
-            {
-                frontier.clear();
-
-                /*search for all available spots  */
-                System.out.println("Explored ::");
-                display(Explored);
-                frontier =allOptions(state,Explored);
-                System.out.println("frontier");
-                display(frontier);
-
-
-                /*remove explored points from frontier */
-                if(!Explored.isEmpty())
-                frontier = removeExplored(Explored);
-
-
-                System.out.println("frontier after removing Explored Cells");
-                display(frontier);
-
-                /*add state point to solutions */
-                solution.add(state);
-
-                /*find solution and add it to list */
-                if(!frontier.isEmpty())
-                solution = leastCostSpot(frontier,state);
-                /*add solutions to explored list  */
-                if(!solution.isEmpty())
-                Explored = addToExplored(solution);
-                /*remove explored points from frontier */
-                if(!Explored.isEmpty())
-                frontier = removeExplored(Explored);
-                /*add unexplored spots from frontier to unexplored list */
-                if(!frontier.isEmpty())
-                UnExplored = addToUnExplored(frontier);
-                System.out.println("frontier");
-                display(frontier);
-                System.out.println("Unexplored");
-                display(UnExplored);
-            }
-            if(reachedGoal(solution,goal)==true){
-                System.out.println("founded the goal solution found");
-                displayMove(solution);
-                break;
-            }
-        //     /* Loop to find all available spots */
-        //     frontier = allOptions(state); 
+            state = start;
+        }else 
+        /*IF NO SOLUTION WAS FOUND THAT MEANS WE HAVE NO OTHER MOVES 
+        AND NO POSSIPLE CELLS TO EXPLORE */
+        if(frontier.isEmpty() && UnExplored.isEmpty()){   
+            System.out.println("no solution was found");
+            paintExplored(Explored);
+            break;
+        }else 
+        /*IF THE PATH WE ARE WALKING IS THE ONLY PATH WE HAVE OR THE BEST ONE WE ASSUME
+         *IT IS THENE LET'S GO AND TAKE THE BEST MOVE
+         */
+        if((!frontier.isEmpty() && UnExplored.isEmpty())||(!frontier.isEmpty() && !UnExplored.isEmpty())){
+            state = solution.lastElement();
             
+            frontier.clear();
+        }else 
+        /*IF THE FRONTIER IS EMPTY AND WE HAVE A POSSIBLE MOVE WE DIDN'T 
+         *THENE LET'S GO AND TRY IT OUT 
+         */
+        if(frontier.isEmpty() && !UnExplored.isEmpty())
+        {
 
-
-        // /*If the Explored list is not empty */
-        // if(!Explored.isEmpty())
-        //     frontier = removeExplored(frontier);
-
-        // /*Find the optimal spote and add it to the solution list  */
-        // solution = leastCostSpot(frontier);
-        
-        // /*Repaint Solutions in Green bg */
-        // System.out.println("repaint available spots in green background");
-        // for(Cords d : solution)
-        // {
-        //     System.out.println("("+d.getX()+","+d.getY()+")");
-        //     cells.get(d.getRef()).setBackground(Color.green);
-        // }
-
-        // // if(!Explored.isEmpty())
-        // // for(Cords d : Explored)
-        // // {
-        // //     System.out.println("("+d.getX()+","+d.getY()+")");
-        // //     cells.get(d.getRef()).setBackground(Color.orange);
-        // // }
-        
-        // /*display all the solution  */
-        // for (Cords d : solution){
-        //     System.out.println("("+d.getX()+","+d.getY()+")reference"+d.getRef());
-        // }
-
-        // /*New Solution becomes the new State  */
-        // state = solution.get(solution.size()-1);
-        // System.out.println("The New State Cords :: ("+state.getX()+","+state.getY()+")reference"+state.getRef());
-        
-        // /* if solution contain goal otherwise search for the optimal solution*/
-
-        // if(reachedGoal(solution)){
-        //     System.out.println("optimal solution WAs Founded ");
-        //     break;
-        // }else
-        //     state = frontier.get(0);
-        
+            state = UnExplored.lastElement();
+            solution.pop();
+            solution.pop();
+            System.out.println("state from unexplored  :::: "+state.getRef());
+            UnExplored.pop();
+            solution.add(state);
         }
-        /****************************************************************
-         * */
-
+        // AT FIRST WE NEED TO HOLD THE BEST MOVES IN THE FRONTIER
+        frontier = allOptions(state, Explored);
         
+        // SECONDLY WE NEED TO ASSUME WHAT MIGHT BE THE BEST MOVE IN THE FRONTIER
+        solution.push(leastCostSpot(frontier));
+        // VERIFY IF WE REACHED THE GOAL OR WE DID NOT
+        if(reachedGoal(solution,goal) == true){
+            System.out.println("we reched goal after walking "+solution.size());
+            display(solution);
+            paintExplored(Explored);
+            System.out.println("explored cells we walked are "+(Explored.size()+1));
+            displayMove(solution);
+            
+            break;
+        }else{
+            if(!frontier.isEmpty())
+            {
+                state = solution.lastElement();
+               
+                // frontier.remove(state);
+                if(!frontier.isEmpty())
+                    addToUnExplored(frontier);
+                
+            }
+            Explored = addToExplored(solution);
+            /*LEST REMOVE EXPLORED CELLS */
+            UnExplored = removeExplored(Explored);
+        }
+
+    }
         
     }
 
