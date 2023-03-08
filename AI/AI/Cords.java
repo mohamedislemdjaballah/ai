@@ -3,10 +3,13 @@ public class Cords{
     private int x;
     private int y;
     private int distance;
+    private int cost;
+
     private int ref;
-    public Cords(int x,int y){
+    public Cords(int x,int y,int cost){
         this.x= x;
         this.y=y;
+        this.cost = cost;
     }
     void setDistance(Cords a,Cords b){
         int x1 = a.getX();
@@ -35,5 +38,11 @@ public class Cords{
     }
     int getdistance(){
         return this.distance;
+    }
+    public int getCost() {
+        return cost;
+    }
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 }

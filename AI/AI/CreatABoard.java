@@ -49,7 +49,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     /*DrawBoard Button */
     JButton DrawBoard = new JButton("Confirme Cords");
     JButton StartSolving = new JButton("Start Game");
-    
+    JButton addBot = new JButton("Add A Bot");
     /* ImagePanel cells holds the matrix cells of our Game */
     ArrayList<JLabel> cells = new ArrayList<JLabel>();
     JLabel cell;
@@ -133,7 +133,8 @@ public class CreatABoard extends JFrame implements ActionListener{
         DrawBoard.addActionListener(this);
 
         /*Seting Frame visibility to true */
-        
+        addBot.setVisible(false);
+        addBotAndGoal();
         setResizable(true);
         setVisible(true);
     }
@@ -155,6 +156,7 @@ public void actionPerformed(ActionEvent e)
             y.setVisible(false);
             DrawBoard.setVisible(false);
             cordinatLabel.setVisible(false);
+            addBot.setVisible(true);
         }else{
             /* */
             System.err.println("enter a valid and x and y arguments");
@@ -185,7 +187,7 @@ public void actionPerformed(ActionEvent e)
                     System.out.println("frame width"+this.getWidth()/width);
                     cell.setSize(this.getWidth()/width, this.getHeight()/height);
                     cells.add(cell);
-                    cordinate = new Cords(i, j);
+                    cordinate = new Cords(i, j,0);
                     cordinate.setRef(ref);
                     matrixCells.add(cordinate);
                     // System.out.println("("+i+","+j+")---->reference"+cordinate.getRef());
@@ -284,7 +286,7 @@ public void actionPerformed(ActionEvent e)
                     x++;
                 }
         space.add(gameBoard,BorderLayout.CENTER);
-        solve();
+        
         space.setVisible(true);
         
         
@@ -299,7 +301,26 @@ public void actionPerformed(ActionEvent e)
             * it again and 
             */
         StartSolving.setEnabled(false);
+
+            // for (Cords cord : matrixCells)
+            //     cord.setDistance(cord, goal);
+
+            for (Cords cord : matrixCells)
+                System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
+            
+            ;
+            for(String action : actions)
+                System.err.println("List of Action :"+action);
+
+            
+            probreMove(start);
+            
+    /*end of Start Solving  */
+    }else if(e.getSource() == addBot)
+    {
         
+        addBot.setVisible(false);
+        StartSolving.setVisible(true);
         /* R holds the the instant of the object Ramnom rand 
         and the cordinate hold a random cell (x,y)
         */
@@ -324,6 +345,9 @@ public void actionPerformed(ActionEvent e)
             //get a Goal Point
             goal = cordinate;
         }
+            /*  After seting the cords to the ending and the goal lets try calcuating the distance
+            to each cell to the goal
+            */
         /* ref is an index var for the matrixcell */
         ref =0;
         /* Image are just needed to scale the image tothe probre size if the label  */
@@ -380,39 +404,26 @@ public void actionPerformed(ActionEvent e)
                 
                 ref ++;
             }
-
-            /*  After seting the cords to the ending and the goal lets try calcuating the distance
-            to each cell to the goal
-            */
-            for (Cords cord : matrixCells)
-                cord.setDistance(cord, goal);
-
-            for (Cords cord : matrixCells)
-                System.out.println("("+(cord.getX()+1)+","+(cord.getY()+1)+"):"+cord.getdistance());
-            
-            ;
-            for(String action : actions)
-                System.err.println("List of Action :"+action);
-
-            
-            probreMove(start);
-            
-            
-
-    /*end of Start Solving  */
     }
 
 }
+void addBotAndGoal(){
 
+    width = (int)y.getValue();
+    height = (int)x.getValue();
+
+    addBot.setFont(font);
+    cordPanel.add(addBot);
+    addBot.addActionListener(this);
+    StartSolving.setVisible(false);
+    solve();
+}
     /* Solving method */
 void solve()
 {
     // width and height are just meant to store the matrix demonsion
     width = (int)y.getValue();
     height = (int)x.getValue();
-    // /* printing the matrix just to comfort it is correct */
-    // for (Cords cord : matrixCells)
-    //     System.out.print("("+(cord.getX()+1)+","+(cord.getY()+1)+")");
     
     /*Add Start solving to the event if all is clear and values are set */
     StartSolving.setFont(font);
@@ -421,7 +432,6 @@ void solve()
 }
 boolean nodeExploreded(Cords state,LinkedHashSet<Cords> Explored)
 {
-    
     for (Cords e : Explored) {
     if((state.getX() == e.getX())&&(state.getY() == e.getY()))
     return true;
