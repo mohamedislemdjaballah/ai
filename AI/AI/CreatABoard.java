@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.LinkedHashSet;
 import java.util.Stack;
 // import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 
 public class CreatABoard extends JFrame implements ActionListener{
@@ -49,6 +50,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     /*DrawBoard Button */
     JButton DrawBoard = new JButton("Confirme Cords");
     JButton StartSolving = new JButton("Start Game");
+    JLabel battery = new JLabel("100%");
     JButton addBot = new JButton("Add A Bot");
     /* ImagePanel cells holds the matrix cells of our Game */
     ArrayList<JLabel> cells = new ArrayList<JLabel>();
@@ -76,7 +78,7 @@ public class CreatABoard extends JFrame implements ActionListener{
     ImageIcon sand = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/sand.png");
     ImageIcon wall = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/wall.png");
     ImageIcon finishLine = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/finish-line.png");
-    ImageIcon Rsand = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rsand.png");
+    ImageIcon blank = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/blank.png");
     ImageIcon Rgrass = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rgrass.png");
     ImageIcon robot = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/robot.png");
     ImageIcon Rempty = new ImageIcon("/home/mohamed/Documents/AI/ai/AI/Rempty.png");
@@ -185,7 +187,7 @@ public void actionPerformed(ActionEvent e)
                     cell.setVerticalAlignment(JLabel.CENTER);
                     cell.setHorizontalAlignment(JLabel.CENTER);
                     System.out.println("frame width"+this.getWidth()/width);
-                    cell.setSize(this.getWidth()/width, this.getHeight()/height);
+                    cell.setSize(this.getWidth()/(height), this.getHeight()/(width));
                     cells.add(cell);
                     cordinate = new Cords(i, j,0);
                     cordinate.setRef(ref);
@@ -301,7 +303,7 @@ public void actionPerformed(ActionEvent e)
             * it again and 
             */
         StartSolving.setEnabled(false);
-
+        battery.setVisible(true);
             // for (Cords cord : matrixCells)
             //     cord.setDistance(cord, goal);
 
@@ -407,6 +409,68 @@ public void actionPerformed(ActionEvent e)
     }
 
 }
+
+
+
+boolean considerWater(Cords d, String dir){
+    Color bgColor;
+    Cords newState;
+    Action move = new Action();
+    switch(dir){
+             /* in each move we make sure we are not getting over the height and width of the maze*/
+             case "up" :
+                    
+             if(((state.getX()-1)>=0))
+             {
+                 
+                 newState = move.Up(state,width);
+                 bgColor =cells.get(newState.getRef()).getBackground();
+                 
+             if(( bgColor != Color.blue && bgColor != Color.red && bgColor != Color.black)  )
+                 return false;
+             }
+         
+         break;
+         case "down" : 
+     
+         
+             if(((state.getX()+1)<height))
+             {
+                 newState = move.Down(state,width);
+                 bgColor =cells.get(newState.getRef()).getBackground();
+                 
+                 if(( bgColor != Color.blue && bgColor != Color.red && bgColor != Color.black)  )
+                 return false;
+             }
+             ;
+         break;
+         case "left" : 
+         
+             if((state.getY()-1)>=0)
+             {
+                 newState = move.Left(state);
+                 bgColor =cells.get(newState.getRef()).getBackground();
+                 if(( bgColor != Color.blue && bgColor != Color.red && bgColor != Color.black)  )
+                 return false;
+             }
+         break;
+
+         case "right" : 
+             if(((state.getY()+1)<width))
+             {
+                 newState = move.Right(state);
+                 bgColor =cells.get(newState.getRef()).getBackground();
+                 if(( bgColor != Color.blue && bgColor != Color.red && bgColor != Color.black)  )
+                 return false;
+             }
+             
+         break;
+    }
+    return true;
+}
+
+
+
 void addBotAndGoal(){
 
     width = (int)y.getValue();
@@ -418,6 +482,8 @@ void addBotAndGoal(){
     StartSolving.setVisible(false);
     solve();
 }
+
+
     /* Solving method */
 void solve()
 {
@@ -427,15 +493,21 @@ void solve()
     
     /*Add Start solving to the event if all is clear and values are set */
     StartSolving.setFont(font);
+    battery.setFont(font);
+    battery.setVisible(false);
     StartSolving.addActionListener(this);
     cordPanel.add(StartSolving);
+    cordPanel.add(battery);
 }
+
+
 boolean nodeExploreded(Cords state,LinkedHashSet<Cords> Explored)
 {
     for (Cords e : Explored) {
     if((state.getX() == e.getX())&&(state.getY() == e.getY()))
     return true;
-    }
+    
+}
     return false;
 }
 
@@ -447,7 +519,9 @@ ArrayList<Cords> allOptions(Cords state,LinkedHashSet<Cords> Explored)
 Action move = new Action();
 Cords newState;
 Color bgColor;
+
  // width and height are just meant to store the matrix demonsion
+
  width = (int)x.getValue();
  height = (int)y.getValue();
  
@@ -465,9 +539,13 @@ Color bgColor;
                             newState = move.Up(state,width);
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println(bgColor);
-                            
+                        if(cells.get(state.getRef()).getBackground() == Color.BLUE && bgColor == Color.blue){
+                            System.out.println("we Cant Move");
+                            break;
+                        }
+                        else
                         if(( bgColor != Color.red && bgColor != Color.black)  )
-                            if(!Explored.isEmpty())
+                        if(!Explored.isEmpty())
                             {
                                 if(!nodeExploreded(newState, Explored))
                                     frontier.add(newState);
@@ -484,6 +562,11 @@ Color bgColor;
                             newState = move.Down(state,width);
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println("Down newState"+newState.getRef()+" bg"+bgColor+"oldState bgColor :"+cells.get(newState.getRef()).getBackground());
+                            if(cells.get(state.getRef()).getBackground() == Color.BLUE && bgColor == Color.blue){
+                                System.out.println("we Cant Move");
+                                break;
+                            }
+                            else
                             if(( bgColor != Color.red && bgColor != Color.black))
                                 if(!Explored.isEmpty())
                                 {
@@ -503,6 +586,11 @@ Color bgColor;
                             bgColor =cells.get(newState.getRef()).getBackground();
 
                             System.out.println("newRed and color "+newState.getRef()+""+bgColor+"old State Red"+state.getRef());
+                            if(cells.get(state.getRef()).getBackground() == Color.BLUE && bgColor == Color.blue){
+                                System.out.println("we Cant Move");
+                                break;
+                            }
+                            else
                             if( ( bgColor != Color.red && bgColor != Color.black))
                             if(!Explored.isEmpty())
                             {
@@ -521,6 +609,11 @@ Color bgColor;
                             newState = move.Right(state);
                             bgColor =cells.get(newState.getRef()).getBackground();
                             // System.out.println(bgColor);
+                            if(cells.get(state.getRef()).getBackground() == Color.BLUE && bgColor == Color.blue){
+                                System.out.println("we Cant Move");
+                                break;
+                            }
+                            else
                             if( ( bgColor != Color.red && bgColor != Color.black))
                             if(!Explored.isEmpty())
                             {
@@ -584,6 +677,8 @@ Cords leastCostSpot(ArrayList<Cords> frontier){
     return bestMove;
 }
 
+
+
 /*Adding explored nodes to explored list */
 LinkedHashSet<Cords> addToExplored(Stack<Cords> solution){
     for(Cords e : solution)
@@ -596,6 +691,9 @@ void addToUnExplored(ArrayList<Cords> frontier){
         UnExplored.push(e);
     
 }
+
+
+
 /*Display Lst contents */
 void display(Stack<Cords> list){
     for(Cords e : list)
@@ -607,6 +705,8 @@ void displayf(ArrayList<Cords> list){
         System.out.println("("+e.getX()+""+e.getY()+")"+e.getRef()+"Ref");
 }
 
+
+
 /* Veridy if we found a solution */
 boolean reachedGoal(Stack<Cords> sol,Cords goal){
     for (Cords e : sol) {
@@ -616,10 +716,64 @@ boolean reachedGoal(Stack<Cords> sol,Cords goal){
         
     return false;
 }
-void displayMove(Stack<Cords> solution){
-for (Cords e : solution) {
-    cells.get(e.getRef()).setBackground(Color.green);
-}
+/*****
+ * Display solutions
+ * @param solution
+ * @throws Exception
+ */ 
+void displayMove(Stack<Cords> solution) throws Exception{
+
+    new Thread(new Runnable() {
+        @Override
+        public void run(){
+            int i=0;
+            int battr=100;
+            //TODO Auto-generated method stub
+            try {
+                for (Cords d : solution) {
+                    cells.get(d.getRef()).setBackground(Color.green);
+                    Icon previousIcon= cells.get(d.getRef()).getIcon();
+                    Image image = robot.getImage();
+                    Image Simage = image.getScaledInstance(cells.get(d.getRef()).getWidth(), cells.get(d.getRef()).getHeight(), Image.SCALE_SMOOTH);
+                    ImageIcon scaled = new ImageIcon(Simage);
+                    cells.get(d.getRef()).setIcon(scaled);
+                    
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(900);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if(d.getRef() == start.getRef())
+                    {
+                        image = blank.getImage();
+                        image = image.getScaledInstance(cells.get(d.getRef()).getWidth(), cells.get(d.getRef()).getHeight(), Image.SCALE_SMOOTH);
+                        scaled = new ImageIcon(Simage);
+                        cells.get(d.getRef()).setIcon(scaled);
+                        
+                    }else if(d.getRef() == goal.getRef()){
+                        image = robot.getImage();
+                        image = image.getScaledInstance(cells.get(d.getRef()).getWidth(), cells.get(d.getRef()).getHeight(), Image.SCALE_SMOOTH);
+                        scaled = new ImageIcon(Simage);
+                        cells.get(solution.get(i).getRef()).setIcon(scaled);
+                    }else if(d.getRef() != start.getRef())
+                      cells.get(solution.get(i).getRef()).setIcon(previousIcon);
+                    Thread.sleep(1000);
+                    i++;
+                    battr =battr-25;
+                    battery.setText(Integer.toString(battr)+"%");
+                    if(battr == 0){   	
+                        Thread.sleep(3000);
+                        battr = 100;
+                        battery.setText(Integer.toString(battr)+"%");
+                    }
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }
+        }
+    }).start();
+    
 }
  void paintExplored(LinkedHashSet<Cords> Explored){
     for (Cords e : Explored) {
@@ -675,7 +829,12 @@ void probreMove(Cords start){
             display(solution);
             paintExplored(Explored);
             System.out.println("explored cells we walked are "+(Explored.size()+1));
-            displayMove(solution);
+            try {
+                displayMove(solution);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             
             break;
         }else{

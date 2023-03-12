@@ -1,0 +1,8 @@
+127c127
+<         frontier = QueueFrontier()
+---
+>         frontier = StackFrontier()
+214c214
+<         img.save("Bfs.png")
+---
+>         img.save(filename)
