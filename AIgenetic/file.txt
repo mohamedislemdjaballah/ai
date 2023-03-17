@@ -1,0 +1,12 @@
+for(int i = current.getOrder(); i< target.size();i++){
+                 // if the color and the order are equals thene the fitness equals 1
+                 if((current.getColor() == target.get(i).getColor())&& (current.getOrder() == target.get(i).getOrder()) ){
+                    current.setFitness(1.0);
+                    break;
+                }else 
+                // if the color exist and the order is not equal thene the we set the fitness to 0.5
+                if((current.getColor() == target.get(i).getColor())&& (current.getOrder() != target.get(i).getOrder()) ){
+                    current.setFitness(0.5);
+                }
+                i++;
+               }
