@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.awt.*;
 import java.awt.event.*;
 public class frame extends JFrame implements ActionListener{
@@ -12,7 +13,7 @@ public class frame extends JFrame implements ActionListener{
     Dimension d = new Dimension(width,height) ;
     SpinnerNumberModel number = new SpinnerNumberModel(5,5,10,1);
     JSpinner spinner = new JSpinner(number);
-    
+    Random rn = new Random();
     /*Panel Layout style  */
     GridLayout grid = new GridLayout(row,col);
     BorderLayout border = new BorderLayout();
@@ -74,25 +75,38 @@ public class frame extends JFrame implements ActionListener{
     /* Making a set of guesse  */
     ArrayList< ArrayList<Cromo>> generateChildGuesses(int nbrOfchilds,int length){
         ArrayList< ArrayList<Cromo> > guesses = new ArrayList< ArrayList<Cromo> >();
-        ArrayList<Cromo> cromo = new ArrayList<Cromo>();
+        
+        int x;
         for(int i=0; i < nbrOfchilds ; i++){
+            ArrayList<Cromo> cromo = new ArrayList<Cromo>();
+            int[] prev = new int[length];
             for(int j=0; j < length ; j++)
             {
+                // x = ThreadLocalRandom.current().nextInt(0,colors.length);
+                x= rn.nextInt(colors.length);
+                while(x == prev[j])
+                {
+                    x= rn.nextInt(colors.length);
+                }
                 
-                cromo.add(new Cromo(colors[new Random().nextInt(colors.length)], null,j));
+                Cromo c = new Cromo(colors[x], null, j);
+                //c.setColor(colors[x]);
+                cromo.add(c);
+                
+                prev[j] = x;
                
             }
-            System.out.println();
-            for (Cromo e   : cromo) {
-                System.out.print(e.getFitness() +"==");
-        
-            }
-            System.out.println();
+            
+            
             guesses.add(cromo);
+            
         }
+        System.out.println("Fitness of all the colors is null");
+        int i=0;
         for (ArrayList<Cromo> c : guesses) {
+            i++;
             for (Cromo e : c) {
-                System.out.print(e.getFitness() +",,");
+                System.out.print(i+":"+e.getFitness());
             }
             System.out.println(c.size());
         }
@@ -101,15 +115,8 @@ public class frame extends JFrame implements ActionListener{
 
 
     public ArrayList< ArrayList<Cromo>> calculateFitness(ArrayList< ArrayList<Cromo>> cromoSet ,ArrayList<Cromo> target){
-        
-        for (ArrayList<Cromo> c : cromoSet) {
-            for (Cromo e : c) {
-                System.out.print(e.getFitness() +",,");
-            }
-            System.out.println(c.size());
-        }
         boolean pass ;
-        ArrayList<ArrayList<Cromo>> cromose = new ArrayList<ArrayList<Cromo>>();
+        // ArrayList<ArrayList<Cromo>> cromose = new ArrayList<ArrayList<Cromo>>();
         /*loop all the cromosoms we added to calculate the fitness of each one  */
         for(ArrayList<Cromo>  cromosom : cromoSet){
             
@@ -135,12 +142,11 @@ public class frame extends JFrame implements ActionListener{
                        
                       }
                 }
-                System.out.print(current.getColor().toString()+",");
-            }System.out.println();
+               
+            }
 
         }
-        cromose = cromoSet;
-        return cromose;
+        return cromoSet;
     }
     public void lunchGame(){
 
@@ -149,7 +155,7 @@ public class frame extends JFrame implements ActionListener{
         cromose = calculateFitness(generateChildGuesses(2, 3), codeMaker);
         for (ArrayList<Cromo> c : cromose) {
             for (Cromo e : c) {
-                System.out.print(e.getFitness() +",");
+                System.out.print(e.getFitness()+"::"+e.getColor() +",");
             }
             System.out.println(c.size());
         }

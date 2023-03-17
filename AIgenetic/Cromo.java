@@ -1,17 +1,24 @@
 import java.util.ArrayList;
 import java.awt.Color;
 
-public class Cromo {public void setFitness(Double fitness) {
+public class Cromo {
+    public void setOrder(int order) {
+    this.order = order;
+}
+    public void setColor(Color color) {
+    this.color = color;
+}
+    public void setFitness(Double fitness) {
     this.fitness = fitness;
 }
     public int getOrder() {
-    return order;
+    return this.order;
 }
     public Double getFitness() {
-    return fitness;
+    return this.fitness;
 }
     public Color getColor() {
-    return color;
+    return this.color;
 }
     private  Color color;
     private Double fitness ;
