@@ -148,6 +148,9 @@ public class frame extends JFrame implements ActionListener{
         }
         return cromoSet;
     }
+
+    /* VERIFYING IF THE TARGET IS EQUAL TO THE RESULTED CROMOSOM */
+    
     public void lunchGame(){
 
         codeMaker = generateTarget(3);
@@ -160,6 +163,8 @@ public class frame extends JFrame implements ActionListener{
             System.out.println(c.size());
         }
         System.out.println(cromose.size());
+
+
         // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // setVisible(true);
     }
