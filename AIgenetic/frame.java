@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicTreeUI.TreeHomeAction;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -8,6 +9,9 @@ import java.awt.event.*;
 import java.lang.annotation.Target;
 import java.nio.channels.NetworkChannel;
 public class frame extends JFrame implements ActionListener{
+    Color[] existingT ;  
+    int steps =0;
+    LinkedHashSet<Color> existing = new LinkedHashSet<>();
     /*Strings  */
     String start= "Start";
     String title="jenie";
@@ -27,12 +31,11 @@ public class frame extends JFrame implements ActionListener{
     BorderLayout border = new BorderLayout();
 
     /*Panels */
-    JPanel propreties = new JPanel();
-    JPanel gameContainer = new JPanel();
-    JPanel Ptarget;
-    JPanel Pfinal;
-    JLayeredPane container = new JLayeredPane();
-    
+    JPanel settings = new JPanel();
+    JPanel board = new JPanel();
+   static JPanel target = new JPanel();
+    JPanel chromosomes = new JPanel();
+    JPanel finalC = new JPanel();
     
     /*Style and Colors */
     ///  small font size 
@@ -50,6 +53,8 @@ public class frame extends JFrame implements ActionListener{
     /*JButtons  */
     JButton start_btn = new  JButton(start);
     JButton confirme = new JButton("Play");
+    JButton play = new JButton("Start Animation");
+    
     /*JLabels  */
     JLabel code = new JLabel();
     JLabel text1= new JLabel("Set Number of (guesses) ");
@@ -57,10 +62,12 @@ public class frame extends JFrame implements ActionListener{
     JLabel text3 = new JLabel("Working on it");
     JLabel text4 = new JLabel("Finded the Sequence after ");
     JLabel text5 = new JLabel("Final Guesse");
-    
+    JLabel color ;
     /* handle Events Attributes */
     // code maker array
     ArrayList<Cromo> codeMaker = new ArrayList<Cromo>();
+    ArrayList<JLabel> sq = new ArrayList<>();
+    ArrayList<JLabel> guessed = new ArrayList<>();
     // set of colors allowed 
     Color[] colors = {
         new Color(255, 0, 0),
@@ -146,12 +153,14 @@ public class frame extends JFrame implements ActionListener{
 
     /* VERIFYING IF THE TARGET IS EQUAL TO THE RESULTED CROMOSOM */
     public boolean equivelant(ArrayList<Cromo> result , ArrayList<Cromo> target){
+        
         Double fitness = 0.0;
+        
         for(Cromo r : result) 
             fitness = fitness + r.getFitness();
             System.out.println(fitness+"/"+target.size()+"=");
         if(fitness/target.size() == 1.0)
-        return true;
+       { return true;}
         return false;
     }
 
@@ -193,31 +202,39 @@ public class frame extends JFrame implements ActionListener{
         ArrayList< ArrayList<Cromo> > guesses = new ArrayList< ArrayList<Cromo> >();
         int x;
         int i = 0;
-        Color[] existing = new Color[parent.size()];  
+        
             // existing colors
-            for (Cromo c : parent) {if(c.getFitness() == 0.5){existing[i] = c.getColor();i++;}}
+            for (Cromo c : parent) {if(c.getFitness() == 0.5){existing.add(c.getColor());i++;}}
+            i=0;
+            for(Color c : existing)
+            {
+                System.out.println("existing ::"+c);
+            }
             i=0;
         for( i=0; i < nbrOfchilds ; i++){
+
             ArrayList<Cromo> cromo = new ArrayList<Cromo>();
             int[] prev = new int[length];
-            
+            existingT = new Color[length];
+
             for(int j=0; j < length ; j++)
             {
                 x= rn.nextInt(colors.length);
                 // while x is giving the sane color loop again to find another color thene the previous chrono
                if(parent.get(j).getFitness() == 0.0)
                {
-                while(x == prev[j]) x= rn.nextInt(colors.length);
+                while(x == prev[j] ) x= rn.nextInt(colors.length);
                 Cromo c = new Cromo(colors[x], null, j);
                 cromo.add(c);
                }else if(parent.get(j).getFitness() == 0.5)
                {
-                x= rn.nextInt(existing.length);
-                System.out.println("random"+x);
-                Cromo c = new Cromo(existing[x], null, j);
+                x= rn.nextInt(colors.length);
+                
+                // System.out.println("random"+x);
+                Cromo c = new Cromo(colors[x], null, j);
                 cromo.add(c);
-               }
-               if(parent.get(j).getFitness() == 0.5)
+               }else 
+               if(parent.get(j).getFitness() == 1.0)
                {
                 cromo.add(parent.get(j));
                }
@@ -231,94 +248,83 @@ public class frame extends JFrame implements ActionListener{
         }
         return guesses;
     }
-    public void lunchGame(){
+    // public void lunchGame(){
 
-        codeMaker = generateTarget(4);
+    //     codeMaker = generateTarget(4);
        
-        // cromose =  generateChildGuesses(2, 3);
-        cromose =calculateFitness(generateChildGuesses(2, codeMaker.size()), codeMaker);
-        /* Display the chromosomms generated  */
-        for (ArrayList<Cromo> c : cromose) for (Cromo e : c) System.out.print(e.getFitness()+"::"+e.getColor() +",");
-        int steps =0;
-        // System.out.println(cromose.size());
-        cromo_two =  mergeCromosoms(cromose,codeMaker.size());
-        while(!equivelant(cromo_two, codeMaker))
-            {
-                cromose =calculateFitness(generateButterGeneration(cromo_two,2, codeMaker.size()), codeMaker);
-                cromo_two = new ArrayList<>();
-                cromo_two =  mergeCromosoms(cromose,codeMaker.size());
-                steps ++;
-            }
-            for (Cromo c : codeMaker) {
-                System.out.println("TARGET COLOR :::: "+c.getColor().toString()+",");
-            }
+    //     // cromose =  generateChildGuesses(2, 3);
+    //     cromose =calculateFitness(generateChildGuesses(2, codeMaker.size()), codeMaker);
+    //     /* Display the chromosomms generated  */
+    //     for (ArrayList<Cromo> c : cromose) for (Cromo e : c) System.out.print(e.getFitness()+"::"+e.getColor() +",");
+    //     int steps =0;
+    //     // System.out.println(cromose.size());
+    //     cromo_two =  mergeCromosoms(cromose,codeMaker.size());
+    //     while(!equivelant(cromo_two, codeMaker))
+    //         {
+    //             cromose =calculateFitness(generateButterGeneration(cromo_two,2, codeMaker.size()), codeMaker);
+    //             cromo_two = new ArrayList<>();
+    //             cromo_two =  mergeCromosoms(cromose,codeMaker.size());
+    //             steps ++;
+    //         }
+    //         for (Cromo c : codeMaker) {
+    //             System.out.println("TARGET COLOR :::: "+c.getColor().toString()+",");
+    //         }
             
-            for (Cromo c : codeMaker) {
-                System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
-            }
-            System.out.println("code fonded after "+steps+"steps");
-        // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // setVisible(true);
-    }
+    //         for (Cromo c : codeMaker) {
+    //             System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
+    //         }
+    //         System.out.println("code fonded after "+steps+"steps");
+    //     // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //     // setVisible(true);
+    // }
     public void creatFrame(){
         setTitle(title);
         setSize(d);
         setLayout(border);
-        // setBackground(bgColor);
-        container.setBounds(0,0,width,height);
-        add(container,BorderLayout.CENTER);
-        container.setLayout(null);
-        int newHeight = height/2, newWidth = width/2;
-       
-        propreties.setBounds(0, 0, newWidth+newWidth/4, height);
-        propreties.setBorder(borderSolid);
-        propreties.setLayout(null);
-        propreties.setBackground(new Color( 0 , 0 , 0 ,100));
 
-        /* game Board */
-        gameContainer.setBounds(propreties.getX()+propreties.getWidth(), 0, width - propreties.getWidth(), height);
-        gameContainer.setBorder(borderSolid);
-        gameContainer.setLayout(null);
-        gameContainer.setBackground(new Color( 0 , 0 , 0 ,100));
+        settings.setLayout(new GridLayout(1,7));
+        GridLayout boardg = new GridLayout(3,1);
+        boardg.setHgap(100);
+        boardg.setVgap(100);
+        board.setLayout(boardg);
+        board.setBorder(borderSolid);
 
-       
-        start_btn.setBounds(newWidth/(newHeight/20), newHeight/(newHeight/10), newWidth/4, newHeight/4);
-        start_btn.setBorder(borderSolid);
-        start_btn.setFont(sfont);
-        start_btn.setFocusable(false);
-        start_btn.addActionListener(this);
-        // ADD LABELS
-        text1.setBounds(start_btn.getX(),start_btn.getY()+start_btn.getHeight(),propreties.getWidth(), start_btn.getHeight());
-        text1.setFont(sfont);
-        text1.setVisible(false);
-        spinner1.setBounds(start_btn.getX(),text1.getY()+text1.getHeight(),50, 50);
-        spinner1.setFont(sfont);
-        spinner1.setVisible(false);
+        add(settings,BorderLayout.NORTH);
+        add(board,BorderLayout.CENTER);
         
-        text2.setBounds(start_btn.getX(),spinner1.getY()+spinner1.getHeight(),propreties.getWidth(), start_btn.getHeight());
-        text2.setFont(sfont);
-        text2.setVisible(false);
-        spinner2.setBounds(start_btn.getX(),text2.getY()+text2.getHeight(),50, 50);
-        spinner2.setFont(sfont);
-        spinner2.setVisible(false);
-       
-        confirme.setBounds(start_btn.getX()+50,spinner2.getY()+spinner2.getHeight()+10,start_btn.getWidth(), start_btn.getHeight());
-        confirme.setBackground(Color.green);
-        confirme.setVisible(false);
+
         confirme.addActionListener(this);
-        // start_btn.setVisible(false);
-        
-        propreties.add(text1);
-        // propreties.add(text2);
-        propreties.add(spinner1);
-        // propreties.add(spinner2);
-        
-        propreties.add(confirme);  
-        propreties.add(start_btn);
+        start_btn.addActionListener(this);
+        play.addActionListener(this);
 
-        container.add(propreties);
-        container.add(gameContainer);
-       
+
+        text1.setVisible(false);
+        spinner1.setVisible(false);
+        confirme.setVisible(false);
+        play.setVisible(false);
+
+
+        settings.add(start_btn);
+        settings.add(text1);
+        settings.add(spinner1);
+        settings.add(confirme);
+        settings.add(play);
+
+        target.setLayout(new GridLayout(1,(int)spinner1.getValue()));
+        finalC.setLayout(new GridLayout(1,(int)spinner1.getValue()));
+        // System.out.println(spinner1.getValue());
+        // target.setBackground(Color.red);
+        target.setVisible(false);
+        finalC.setVisible(false);
+
+        board.add(target);
+        board.add(finalC);
+        
+        board.setOpaque(true);
+
+        
+        
+        board.setOpaque(true);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -329,28 +335,132 @@ public class frame extends JFrame implements ActionListener{
         if(e.getSource() == start_btn){
             text1.setVisible(true);
             spinner1.setVisible(true);
-            text2.setVisible(true);
-            spinner2.setVisible(true);
             confirme.setVisible(true);
-            start_btn.setEnabled(false);
-        }else if(e.getSource() == confirme)
+        }else if(e.getSource() == confirme){
+
+            
+            confirme.setVisible(false);
+            play.setVisible(true);
+            target.setVisible(true);
+            finalC.setVisible(true);
+            codeMaker = generateTarget((int)spinner1.getValue());
+            for (Cromo c : codeMaker) 
         {
-            propreties.setSize(width/width, height);
-            chromosomms = (int)spinner1.getValue();
-            SequenceL = (int)spinner2.getValue();
-            gameContainer.setBounds(0, 0, width, height);
+            color = new JLabel("Color");
+            color.setForeground(c.getColor());
+            color.setBackground(c.getColor());
+            color.setBorder(borderSolid);
+            target.add(color);
+            sq.add(color);
+            // System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
+        }
+        for (Cromo c : codeMaker) 
+        {
+            JLabel b = new JLabel("Target Gene");
+            finalC.add(b);
+            guessed.add(b);
+            // System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
+        }
+      
+            // int i=0;
+            // if(!sq.isEmpty())
+            // for (Cromo c : codeMaker) 
+            // {
+            //     sq.get(i).setForeground(c.getColor());
+            //     i++;
+            //     // target.add(color);
+                
+            //     // System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
+            // }
+        }else if(e.getSource() == play)
+        {
+                 // cromose =  generateChildGuesses(2, 3);
+        cromose =calculateFitness(generateChildGuesses(2, codeMaker.size()), codeMaker);
+        /* Display the chromosomms generated  */
+        for (ArrayList<Cromo> c : cromose) for (Cromo r : c) System.out.print(r.getFitness()+"::"+r.getColor() +",");
+        
+        // System.out.println(cromose.size());
+        cromo_two =  mergeCromosoms(cromose,codeMaker.size());
+        
+            try {
+                new Thread( new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO Auto-generated method stub
+                        while(!equivelant(cromo_two, codeMaker))
+                        {
+                            cromose =calculateFitness(generateButterGeneration(cromo_two,2, codeMaker.size()), codeMaker);
+                            cromo_two = new ArrayList<>();
+                            cromo_two =  mergeCromosoms(cromose,codeMaker.size());
+                            paint(cromo_two);
+                            // System.out.println("cromo size"+cromo_two.size());
+                            steps ++;
+                            try {
+                                
+                                Thread.sleep(1000);
+                            } catch (Exception d) {
+                                // TODO: handle exception
+                                d.printStackTrace();
+                            }
+                        }
+                        for (Cromo c : codeMaker) {
+                            System.out.println("TARGET COLOR :::: "+c.getColor().toString()+",");
+                        }
+                        
+                        for (Cromo c : cromo_two) {
+                            System.out.println("Generated COLOR :::: "+c.getColor().toString()+",");
+                            
+                        }
+                        System.out.println("code fonded after "+steps+"steps");
+                
+                    }
+                }).start();
+            } catch (Exception e1) {
+                // TODO: handle exception
+            }
             
         }
-        
-        
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
-        
     }
-
+public void paint(ArrayList<Cromo> c){
+    Color[] cls = new Color[10];
+    int i=0;
+    System.out.println(guessed.size());
+   
+    for(Cromo e : c){
+        cls[i] = e.getColor();
+        System.out.println("cls ::"+cls[i]);
+        i++;
+    }
+    i=0;
+    try {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                
+                // TODO Auto-generated method stub
+                int i = 0;
+                for(JLabel d : guessed)
+                    {
+                        d.setForeground(cls[i]);i++;
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception e2) {
+                            // TODO: handle exception
+                            e2.printStackTrace();
+                        }}
+                
+            }
+        }).start();
+        
+    } catch (Exception e1) {
+        // TODO: handle exception
+        e1.printStackTrace();
+    }
+   
+}
     public static void main(String argv[]){
        frame f =  new frame();
-       f.lunchGame();
+    //    f.lunchGame();
        f.creatFrame();
     }
 
