@@ -10,3 +10,25 @@ for(int i = current.getOrder(); i< target.size();i++){
                 }
                 i++;
                }
+
+                       for(Cromo e : c){
+            System.out.print(e.getFitness()+"|");
+            if(e.getFitness() == 1.0)
+                {
+                    probabilitie[i] = 1.0;
+                    
+                    // System.out.println(probabilitie[i]);
+                }else if(e.getFitness() == 0.5)
+                {
+                    probabilitie[i] = 0.5;
+                }else
+                    probabilitie[i] = 0.0;
+                i++;
+                }
+                i=0;
+                fitness[current] = 0.0;
+                for(int j=0;j<3;j++)
+                    {
+                        // System.out.print(probabilitie[j]);    
+                        fitness[current] = fitness[current]+ probabilitie[j];
+                    }
