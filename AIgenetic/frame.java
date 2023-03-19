@@ -15,9 +15,12 @@ public class frame extends JFrame implements ActionListener{
     /* numeric variables */
     private int width=800,height=600;
     private int col=20,row=20;
+    public int chromosomms;
+    public int SequenceL;
     Dimension d = new Dimension(width,height) ;
     SpinnerNumberModel number = new SpinnerNumberModel(5,5,10,1);
-    JSpinner spinner = new JSpinner(number);
+    JSpinner spinner1= new JSpinner(number);
+    JSpinner spinner2 = new JSpinner(number);
     Random rn = new Random();
     /*Panel Layout style  */
     GridLayout grid = new GridLayout(row,col);
@@ -50,10 +53,10 @@ public class frame extends JFrame implements ActionListener{
     /*JLabels  */
     JLabel code = new JLabel();
     JLabel text1= new JLabel("Set Number of (guesses) ");
-    JLabel text2 = new JLabel("Final Guesse");
+    JLabel text2 = new JLabel("Set Number of steps");
     JLabel text3 = new JLabel("Working on it");
     JLabel text4 = new JLabel("Finded the Sequence after ");
-    JLabel text5 = new JLabel("Set Number of steps");
+    JLabel text5 = new JLabel("Final Guesse");
     
     /* handle Events Attributes */
     // code maker array
@@ -271,18 +274,50 @@ public class frame extends JFrame implements ActionListener{
         propreties.setBorder(borderSolid);
         propreties.setLayout(null);
         propreties.setBackground(new Color( 0 , 0 , 0 ,100));
+
+        /* game Board */
+        gameContainer.setBounds(propreties.getX()+propreties.getWidth(), 0, width - propreties.getWidth(), height);
+        gameContainer.setBorder(borderSolid);
+        gameContainer.setLayout(null);
+        gameContainer.setBackground(new Color( 0 , 0 , 0 ,100));
+
        
         start_btn.setBounds(newWidth/(newHeight/20), newHeight/(newHeight/10), newWidth/4, newHeight/4);
         start_btn.setBorder(borderSolid);
         start_btn.setFont(sfont);
         start_btn.setFocusable(false);
         start_btn.addActionListener(this);
+        // ADD LABELS
+        text1.setBounds(start_btn.getX(),start_btn.getY()+start_btn.getHeight(),propreties.getWidth(), start_btn.getHeight());
+        text1.setFont(sfont);
+        text1.setVisible(false);
+        spinner1.setBounds(start_btn.getX(),text1.getY()+text1.getHeight(),50, 50);
+        spinner1.setFont(sfont);
+        spinner1.setVisible(false);
         
-        text1.setBounds(EXIT_ON_CLOSE, ABORT, WIDTH, HEIGHT);
+        text2.setBounds(start_btn.getX(),spinner1.getY()+spinner1.getHeight(),propreties.getWidth(), start_btn.getHeight());
+        text2.setFont(sfont);
+        text2.setVisible(false);
+        spinner2.setBounds(start_btn.getX(),text2.getY()+text2.getHeight(),50, 50);
+        spinner2.setFont(sfont);
+        spinner2.setVisible(false);
+       
+        confirme.setBounds(start_btn.getX()+50,spinner2.getY()+spinner2.getHeight()+10,start_btn.getWidth(), start_btn.getHeight());
+        confirme.setBackground(Color.green);
+        confirme.setVisible(false);
+        confirme.addActionListener(this);
+        // start_btn.setVisible(false);
         
+        propreties.add(text1);
+        // propreties.add(text2);
+        propreties.add(spinner1);
+        // propreties.add(spinner2);
         
-        propreties.add(start_btn,BorderLayout.CENTER);
+        propreties.add(confirme);  
+        propreties.add(start_btn);
+
         container.add(propreties);
+        container.add(gameContainer);
        
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -292,7 +327,19 @@ public class frame extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == start_btn){
-            text1.setFont(sfont);
+            text1.setVisible(true);
+            spinner1.setVisible(true);
+            text2.setVisible(true);
+            spinner2.setVisible(true);
+            confirme.setVisible(true);
+            start_btn.setEnabled(false);
+        }else if(e.getSource() == confirme)
+        {
+            propreties.setSize(width/width, height);
+            chromosomms = (int)spinner1.getValue();
+            SequenceL = (int)spinner2.getValue();
+            gameContainer.setBounds(0, 0, width, height);
+            
         }
         
         
